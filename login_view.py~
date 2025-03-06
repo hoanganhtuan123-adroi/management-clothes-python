@@ -1,0 +1,22 @@
+from PyQt6 import uic
+from PyQt6.QtWidgets import QMainWindow
+# from database import Database
+
+class LoginView(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.ui = uic.loadUi('login.ui', self)
+        # self.db = Database()
+        self.ui.btnLogin.clicked.connect(self.dang_nhap)
+        self.show()
+    def dang_nhap(self):
+        username = self.ui.username.text()
+        password = self.ui.password.text()
+        print(username, password)
+        # cursor = self.db.get_connect().cursor()
+        # cursor.execute("SELECT * FROM users WHERE username = %s AND password = %s", (username, password))
+        # user = cursor.fetchone()
+        # if user:
+        #     print("Dang nhap thanh cong")
+        # else:
+        #     print("Dang nhap that bai")

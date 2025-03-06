@@ -1,0 +1,21 @@
+from views.loginView import LoginView
+from models.userModel import UserModel
+class LoginController:
+    def __init__(self, view: LoginView, user_model: UserModel):
+        self.view = view
+        self.user_model = user_model
+        # Gán hàm xử lý cho nút đăng nhập
+        self.view.set_login_handler(self.login)
+
+    def login(self):
+        username = self.view.get_username()
+        password = self.view.get_password()
+
+        try:
+            authenticated = self.user_model.authenticate(username, password)
+            if authenticated:
+                self.view.show_message("Thành công", "Đăng nhập thành công!")
+            else:
+                self.view.show_error("Thất bại", "Đăng nhập thất bại!")
+        except Exception as e:
+            self.view.show_error("Lỗi", f"Có lỗi xảy ra: {e}")
