@@ -1,7 +1,8 @@
 import tkinter as tk
-from tkinter import ttk, filedialog, PhotoImage
+from tkinter import ttk, filedialog, PhotoImage, messagebox
 from PIL import Image, ImageTk
 from ttkthemes import ThemedTk
+from controllers.sanPhamController import SanPhamController
 import os
 
 class FormTaoSanPham(tk.Toplevel):
@@ -9,10 +10,10 @@ class FormTaoSanPham(tk.Toplevel):
         super().__init__(parent)
         self.parent = parent
         self.title("Tạo sản phẩm")
-        self.geometry("500x600")
+        self.geometry("800x700")
         self.configure(bg="white")
         self.resizable(False, False)
-
+        self.controller = SanPhamController()
         self.img_list = []
         # Variables
         self.img_path = None
@@ -21,12 +22,12 @@ class FormTaoSanPham(tk.Toplevel):
         self.create_widgets()
 
         # Center the window
-        self.update_idletasks()
-        width = self.winfo_width()
-        height = self.winfo_height()
-        x = (self.winfo_screenwidth() // 2) - (width // 2)
-        y = (self.winfo_screenheight() // 2) - (height // 2)
-        self.geometry('{}x{}+{}+{}'.format(width, height, x, y))
+        # self.update_idletasks()
+        # width = self.winfo_width()
+        # height = self.winfo_height()
+        # x = (self.winfo_screenwidth() // 2) - (width // 2)
+        # y = (self.winfo_screenheight() // 2) - (height // 2)
+        # self.geometry('{}x{}+{}+{}'.format(width, height, x, y))
 
         # Make sure this window stays on top of its parent
         self.transient(parent)
@@ -226,12 +227,59 @@ class FormTaoSanPham(tk.Toplevel):
             'hinh_anh': self.img_path
         }
 
-        # Here you would typically save to database through controller
-        print("Product data:", product_data)
+        # Validate data
+        errors = self.validate_data(product_data)
+        if len(errors) == 0:
+            isSuccess = self.controller.createProductController(product_data)
+            if isSuccess:
+             messagebox.showinfo("Thông báo", "Thêm sản phẩm thành công!")
+             self.parent.reload_data()
+             self.destroy()
+        else:
+            messagebox.showerror("Lỗi", errors[0])
 
-        # Refresh the parent's data and close the form
-        self.parent.reload_data()
-        self.destroy()
+
+    def validate_data(self, product_data):
+        errors = []
+
+        # Validate name_sp (product name)
+        if not product_data['ten_sp']:
+            errors.append("Mời nhập tên sản phẩm.")
+
+        # Validate ma_sp (product code)
+        if not product_data['ma_sp']:
+            errors.append("Vui lòng điền mã sản phâm.")
+
+        # Validate loai_sp (product category)
+        if not product_data['loai_sp']:
+            errors.append("Vui lòng nhập loại sản phẩm.")
+
+        # Validate mo_ta (product description)
+        if not product_data['mo_ta'].strip():
+            errors.append("Vui lòng nhập mô tả.")
+
+        # Validate gia_ban (price)
+        try:
+            price = float(product_data['gia_ban'])
+            if price <= 0:
+                errors.append("Giá sản phẩm không được âm.")
+        except ValueError:
+            errors.append("Giá sản phẩm phải là số.")
+
+        # Validate kich_thuoc (dimensions)
+        if not product_data['kich_thuoc']:
+            errors.append("Vui lòng nhập kích thước.")
+
+        # Validate mau_sac (color)
+        if not product_data['mau_sac']:
+            errors.append("Vui lòng nhập màu sắc.")
+
+        # Validate hinh_anh (image path)
+        if not product_data['hinh_anh']:
+            errors.append("Vui lòng chọn ảnh sản phẩm.")
+
+        return errors
+
 
 # Running the application
 if __name__ == "__main__":

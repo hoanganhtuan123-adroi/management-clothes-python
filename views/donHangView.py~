@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from controllers.donHangController import DonHangController
-from views.forms.fomTaoDonHang import CreateOrderForm
+from forms.fomTaoDonHang import CreateOrderForm
 class DonHangFrame(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent, bg="white")

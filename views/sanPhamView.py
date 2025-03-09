@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from controllers.sanPhamController import SanPhamController
 from views.forms.formTaoSanPham import FormTaoSanPham
+from views.forms.formTTSanPham import ProductForm
 class SanPhamFrame(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent, bg="white")
@@ -47,17 +48,17 @@ class SanPhamFrame(tk.Frame):
                         background="#f0f0f0",
                         foreground="black")
 
-        columns = ("ma_san_pham", "ten_san_pham", "gia_ban", "so_luong_con")
+        columns = ("ma_san_pham", "ten_san_pham", "gia_ban", "kich_thuoc")
         self.tree = ttk.Treeview(self, columns=columns, show="headings")
         self.tree.heading("ma_san_pham", text="Mã sản phẩm")
         self.tree.heading("ten_san_pham", text="Tên sản phẩm")
         self.tree.heading("gia_ban", text="Giá bán (VND)")
-        self.tree.heading("so_luong_con", text="Số lượng còn")
+        self.tree.heading("kich_thuoc", text="Kích thước")
 
         self.tree.column("ma_san_pham", width=200, anchor="w")
-        self.tree.column("ten_san_pham", width=150, anchor="w")
-        self.tree.column("gia_ban", width=200, anchor="w")
-        self.tree.column("so_luong_con", width=200, anchor="w")
+        self.tree.column("ten_san_pham", width=250, anchor="w")
+        self.tree.column("gia_ban", width=150, anchor="w")
+        self.tree.column("kich_thuoc", width=150, anchor="w")
 
         self.tree.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
@@ -75,10 +76,10 @@ class SanPhamFrame(tk.Frame):
         if products:
             for row in products:
                 values = (
-                    row['ma_sp'],  # Khách hàng
-                    row['ten_sp'],  # Điện thoại
-                    "{:,.0f} VND".format(row['gia_ban']),  # Địa chỉ
-                    row['so_luong_con'],  # Email
+                    row['ma_sp'],
+                    row['ten_sp'],
+                    "{:,.0f} VND".format(row['gia_ban']),
+                    row['kich_thuoc'],
                 )
                 self.tree.insert("", tk.END, values=values, tags=(row))
         else:
@@ -93,7 +94,7 @@ class SanPhamFrame(tk.Frame):
         # Get selected row data
         selected_item = self.tree.selection()[0]
         row_data = self.tree.item(selected_item)["tags"][0]
-        # FormTTKhachHang(self, customer_data=row_data)
+        ProductForm(self, row_data)
 
     def search_products(self):
         query = self.search_entry.get().lower()

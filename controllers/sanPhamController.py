@@ -9,3 +9,21 @@ class SanPhamController:
             return products
         else:
             return []
+    def createProductController(self,data):
+        isCreated = self.product_model.createProductModel(data)
+        if isCreated:
+            return True
+        else:
+            return False
+    def deleteProductController(self, id):
+        isDeleted = self.product_model.deleteProductModel(id)
+        if isDeleted:
+            return True
+        else:
+            return False
+    def updateProductController(self, data):
+        isUpdated = self.product_model.updateProductModel(data)
+        if isUpdated:
+            return True
+        else:
+            return False
