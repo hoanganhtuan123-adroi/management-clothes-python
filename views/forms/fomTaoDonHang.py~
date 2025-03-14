@@ -4,6 +4,7 @@ from PIL import Image, ImageTk
 from controllers.sanPhamController import SanPhamController
 from controllers.khachHangController import KhachHangController
 from controllers.donHangController import DonHangController
+from views.forms.formTaoKhachHang import FormTaoKhachHang
 from config.commonDef import CommonDef
 
 class CreateOrderForm(tk.Toplevel):
@@ -29,6 +30,7 @@ class CreateOrderForm(tk.Toplevel):
         self.controller = SanPhamController()
         self.list_customers = self.customerController.getAllCustomersController()
         self.list_products = self.controller.getProductsController()
+
         self.configDef = CommonDef()
 
         self.order_items = []
@@ -38,6 +40,8 @@ class CreateOrderForm(tk.Toplevel):
         # Tạo giao diện
         self.create_ui()
         self.create_ui_customer()
+        self.insert_products_to_listbox()
+        self.insert_customers_to_listbox()
 
     def create_ui(self):
         main_frame = tk.Frame(self, bg="#f5f6fa")
@@ -126,6 +130,10 @@ class CreateOrderForm(tk.Toplevel):
 
         matching_products = [p for p in self.list_products if (search_term in p["ten_sp"].lower() or search_term in str(p.get("ma_sp", "")).lower() )]
         for product in matching_products:
+            self.product_listbox.insert(tk.END, f"{product['ten_sp']} - {product['ma_sp']} - {self.configDef.format_number(product['gia_ban'])}")
+
+    def insert_products_to_listbox(self):
+        for product in self.list_products:
             self.product_listbox.insert(tk.END, f"{product['ten_sp']} - {product['ma_sp']} - {self.configDef.format_number(product['gia_ban'])}")
 
     def select_product(self, event=None):
@@ -245,10 +253,11 @@ class CreateOrderForm(tk.Toplevel):
             "payment_method": self.payment_method.get()
         }
         data = self.orderController.createOrderController(order_data)
-
-
-        # messagebox.showinfo("Thành công", "Tạo đơn hàng thành công!")
-        # self.destroy()
+        if data:
+            messagebox.showinfo("Thành công", "Tạo đơn hàng thành công!")
+            self.destroy()
+        else:
+            messagebox.showerror("Lỗi", "Tạo đơn hàng thất bại!")
 
     def create_ui_customer(self):
         main_frame = tk.Frame(self, bg="#f5f6fa")
@@ -274,19 +283,8 @@ class CreateOrderForm(tk.Toplevel):
         create_frame = tk.Frame(main_frame, bg="#f5f6fa")
         create_frame.pack(fill="x", pady=10)
 
-        tk.Label(create_frame, text="Tạo khách hàng mới", font=("Helvetica", 12, "bold"),
-                 bg="#f5f6fa").grid(row=0, column=0, columnspan=2, sticky="w")
-
-        tk.Label(create_frame, text="Tên khách hàng", bg="#f5f6fa").grid(row=1, column=0, sticky="w")
-        self.name_entry = tk.Entry(create_frame, font=("Helvetica", 12))
-        self.name_entry.grid(row=1, column=1, sticky="ew", padx=5)
-
-        tk.Label(create_frame, text="Email", bg="#f5f6fa").grid(row=2, column=0, sticky="w")
-        self.email_entry = tk.Entry(create_frame, font=("Helvetica", 12))
-        self.email_entry.grid(row=2, column=1, sticky="ew", padx=5)
-
-        tk.Button(create_frame, text="Tạo", bg="#3498db", fg="white",
-                  command=self.create_customer).grid(row=3, column=1, sticky="e", pady=5)
+        tk.Button(create_frame, text="Tạo khách hàng mới", bg="#3498db", fg="white",font=("Helvetica", 12, "bold"),
+                  command=self.create_customer).grid(row=0, column=0, columnspan=2, sticky="w", pady=5)
 
         # Thông tin giao hàng
         shipping_frame = tk.Frame(main_frame, bg="#f5f6fa")
@@ -314,20 +312,6 @@ class CreateOrderForm(tk.Toplevel):
                     details += f"Địa chỉ: {customer['diachi']}"
                     self.shipping_info.config(text=details)
 
-    def create_customer(self):
-        name = self.name_entry.get()
-        email = self.email_entry.get()
-        if name and email:
-            new_customer = {
-                "name": name,
-                "email": email,
-                "phone": "",
-                "address": ""
-            }
-            self.customers.append(new_customer)
-            self.customer_listbox.insert(tk.END, name)
-            messagebox.showinfo("Thành công", "Đã tạo khách hàng mới")
-
     def search_customer(self, event=None):
         search_term = self.customer_search_entry.get().strip().lower()  # Lấy chuỗi tìm kiếm và chuẩn hóa
         self.customer_listbox.delete(0, tk.END)  # Xóa toàn bộ danh sách hiện tại
@@ -341,6 +325,26 @@ class CreateOrderForm(tk.Toplevel):
         # Thêm các khách hàng phù hợp vào Listbox
         for customer in filtered_customers:
             self.customer_listbox.insert(tk.END, f"{customer["hoten"]} - {customer["email"] }" )
+
+    def insert_customers_to_listbox(self):
+        self.customer_listbox.delete(0, tk.END)
+        for customer in self.list_customers:
+            self.customer_listbox.insert(tk.END, f"{customer['hoten']} - {customer['email'] }" )
+
+    def create_customer(self):
+        form = FormTaoKhachHang(self)
+        self.wait_window(form)
+        if form.result:  # Kiểm tra nếu result là True (thành công)
+            self.list_customers = self.customerController.getAllCustomersController()
+            if not self.list_customers:  # Kiểm tra nếu danh sách rỗng
+                print("Không có dữ liệu khách hàng mới!")
+                return
+            self.customer_listbox.delete(0, tk.END)
+            self.insert_customers_to_listbox()
+            print("Khách hàng đã được tạo thành công!")
+        else:  # Nếu result là False, thông báo thất bại
+            print("Có lỗi khi tạo khách hàng!")
+
 
 if __name__ == "__main__":
     root = tk.Tk()

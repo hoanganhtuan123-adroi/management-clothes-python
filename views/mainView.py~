@@ -102,18 +102,23 @@ class MainView(tk.Toplevel):
         # Từ điển để lưu các frame
         self.frames = {}
 
-        # Khởi tạo các frame con
-        for F in (KhachHangFrame, SanPhamFrame, DonHangFrame, KhoHangFrame, NhanVienFrame, NhaCungCapFrame, BaoCaoFrame, PhanQuyenFrame):
+        for F in (KhachHangFrame, SanPhamFrame, DonHangFrame, KhoHangFrame, NhanVienFrame, NhaCungCapFrame, BaoCaoFrame,
+                  PhanQuyenFrame):
             page_name = F.__name__
-            frame = F(self.main_container, self)
-            self.frames[page_name] = frame
-            # Dùng grid để chồng các frame lên nhau
-            frame.grid(row=0, column=0, sticky="nsew")
-
-        # Hiển thị frame mặc định ban đầu
+            try:
+                frame = F(self.main_container)
+                self.frames[page_name] = frame
+                frame.grid(row=0, column=0, sticky="nsew")
+                print(f"Đã thêm khung: {page_name}")
+            except Exception as e:
+                print(f"Lỗi khi khởi tạo {page_name}: {e}")
+                break  # hoặc continue, tùy thuộc vào mong muốn
+        print("Các khung có sẵn:", self.frames.keys())
         self.select_button("khach_hang", "KhachHangFrame")
 
     def select_button(self, button_name, button_frame):
+        print("check button >> ",button_name)
+        print("check frame >> ",button_frame)
         # Đặt lại màu sắc của nút trước đó (nếu có)
         if self.selected_button:
             self.selected_button.config(bg="#f0f0f0", fg='#000')  # Reset màu sắc
@@ -167,5 +172,9 @@ class MainView(tk.Toplevel):
         """
         Đưa frame tương ứng với page_name lên trên cùng.
         """
+        print("Các khung có sẵn:", self.frames.keys())
+        if page_name not in self.frames:
+            print(f"Frame '{page_name}' không tìm thấy.")
+            return
         frame = self.frames[page_name]
         frame.tkraise()

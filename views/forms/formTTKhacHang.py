@@ -83,7 +83,6 @@ class FormTTKhachHang(tk.Toplevel):
         self.cancel_button.pack(side=tk.LEFT, padx=10)
 
     def display_image(self, image_path):
-        """Display the image from the file path."""
         img = Image.open(image_path)  # Open the image from the file path
         if img:
             img = img.resize((100, 100))  # Resize the image to fit the label (optional)

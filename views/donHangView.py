@@ -2,12 +2,14 @@ import tkinter as tk
 from tkinter import ttk
 from controllers.donHangController import DonHangController
 from views.forms.fomTaoDonHang import CreateOrderForm
+from config.commonDef import CommonDef
+from tkinter import messagebox
 class DonHangFrame(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent, bg="white")
         self.controller = DonHangController()
         self.list_orders = self.controller.getOrdersController()
-
+        self.commonDef = CommonDef()
         # Gọi hàm tạo giao diện
         self.create_ui()
 
@@ -85,8 +87,13 @@ class DonHangFrame(tk.Frame):
         self.tree.tag_configure("delivered", foreground="green")
         self.tree.tag_configure("undelivered", foreground="orange")
 
+        # Gắn sự kiện khi chọn một hàng
+        self.tree.bind("<<TreeviewSelect>>", self.on_tree_select)
+
+        # Nút tạo đơn mới
+        tk.Button(main_frame, text="Xóa đơn hàng", font=("Helvetica", 12), bg="#3498db", fg="white",command= self.delete_selected_order).pack(anchor="e",pady=5)
+
     def update_treeview(self, orders):
-        """Cập nhật dữ liệu vào Treeview."""
         # Xóa dữ liệu cũ
         for item in self.tree.get_children():
             self.tree.delete(item)
@@ -94,18 +101,6 @@ class DonHangFrame(tk.Frame):
         # Thêm dữ liệu mới
         for order in orders:
             tags = []
-            # Định dạng màu cho cột Thanh toán
-            # if order["thanh_toan"] == "Đã thanh toán":
-            #     tags.append("paid")
-            # else:
-            #     tags.append("unpaid")
-            #
-            # # Định dạng màu cho cột Giao hàng
-            # if order["giao_hang"] == "Đã giao hàng":
-            #     tags.append("delivered")
-            # else:
-            #     tags.append("undelivered")
-
             values = (
                 order[1],
                 order[2],
@@ -113,7 +108,7 @@ class DonHangFrame(tk.Frame):
                 order[4],
                 order[5],
                 order[6],
-                "{:,.0f}".format(order[7]  * order[8])
+                self.commonDef.format_number(order[9])
             )
             self.tree.insert("", tk.END, values=values, tags=tags)
 
@@ -135,3 +130,35 @@ class DonHangFrame(tk.Frame):
 
     def create_order(self):
         CreateOrderForm(self)
+
+    def on_tree_select(self, event):
+        selected_item = self.tree.selection()
+        if not selected_item:
+            messagebox.showwarning("Cảnh báo", "Vui lòng chọn một đơn hàng để xóa!")
+            return
+        if selected_item:
+            item = self.tree.item(selected_item[0])
+            values = item["values"]
+            self.selected_id_delete = values[0]
+
+    def delete_selected_order(self):
+        if self.selected_id_delete is not None:
+            # Gọi hàm xóa
+            self.delete_order(self.selected_id_delete)
+
+    def delete_order(self, id):
+        isConfirm =  messagebox.askyesno("Thông báo", "Bạn có chắc chắn xóa đơn hàng này không?")
+        if isConfirm:
+            isSuccess = self.controller.deleteOrderContrller(id)
+            if isSuccess:
+                messagebox.showinfo("Thông báo", "Xóa thành công!")
+            else:
+                messagebox.showerror("Thông báo", "Xóa thất bại")
+
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    root.geometry("1000x600")
+    app = DonHangFrame(root, None)
+    app.pack(fill=tk.BOTH, expand=True)
+    root.mainloop()

@@ -11,7 +11,10 @@ class FormTaoKhachHang(tk.Toplevel):
         self.title("Thêm khách hàng mới")
         self.configure(bg="white")
         self.geometry("800x400")  # Điều chỉnh kích thước cửa sổ
+        self.result = None
+        self.transient(parent)
         self.create_form()
+        self.grab_set()
 
     def create_form(self):
         # Tùy chỉnh style cho các thành phần
@@ -116,11 +119,14 @@ class FormTaoKhachHang(tk.Toplevel):
         isSuccess = self.controller.createCustomerController(customer_data)
         if isSuccess:
             messagebox.showinfo("Thông báo", "Tạo khách hàng thành công!")
+            self.result = True
             self.clear_form()
         else:
             messagebox.showerror("Lỗi", "Tạo khách hàng thât bại!")
+            self.result = False
 
     def cancel(self):
+        self.result = False
         self.clear_form()
 
     def clear_form(self):
