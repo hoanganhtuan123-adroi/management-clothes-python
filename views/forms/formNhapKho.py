@@ -2,17 +2,17 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from datetime import datetime
 from controllers.sanPhamController import SanPhamController
-
+from controllers.khoHangController import KhoHangController
 class NhapKhoForm(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
         self.title("Quản lý Nhập Kho")
         self.geometry("1200x700")
         self.configure(bg="#F5F5F5")
-
+        self.contrller_khohang = KhoHangController()
         self.controller_product = SanPhamController()
         self.list_products = self.controller_product.getProductsController()
-
+        self.list_suppliers = self.contrller_khohang.getAllSponsersController()
 
         # Style configuration
         self.style = ttk.Style()
@@ -43,15 +43,15 @@ class NhapKhoForm(tk.Toplevel):
                  font=("Arial", 11, "bold")).pack(pady=10)
 
         self.product_listbox = tk.Listbox(product_frame, width=30, height=15,
-                                          font=("Arial", 10), selectbackground="#3498DB")
+                                          font=("Arial", 10), selectbackground="#3498DB", exportselection=False)
         scroll_product = tk.Scrollbar(product_frame, orient="vertical")
         scroll_product.config(command=self.product_listbox.yview)
         scroll_product.pack(side="right", fill="y")
-        self.product_listbox.pack(expand=True, fill="both", padx=10, pady=5)
+        self.product_listbox.pack(expand=True, fill="both", padx=10, pady=5, )
 
 
         for product in self.list_products:
-            self.product_listbox.insert(tk.END, f"{product['id']} - f{product['ten_sp']}")
+            self.product_listbox.insert(tk.END, f"{product['id']} - {product['ten_sp']}")
 
         # Supplier Listbox
         supplier_frame = tk.Frame(list_container, bg="#FFFFFF", bd=2, relief="groove")
@@ -61,17 +61,15 @@ class NhapKhoForm(tk.Toplevel):
                  font=("Arial", 11, "bold")).pack(pady=10)
 
         self.supplier_listbox = tk.Listbox(supplier_frame, width=30, height=15,
-                                           font=("Arial", 10), selectbackground="#2ecc71")
+                                           font=("Arial", 10), selectbackground="#2ecc71", exportselection=False)
         scroll_supplier = tk.Scrollbar(supplier_frame, orient="vertical")
         scroll_supplier.config(command=self.supplier_listbox.yview)
         scroll_supplier.pack(side="right", fill="y")
-        self.supplier_listbox.pack(expand=True, fill="both", padx=10, pady=5)
+        self.supplier_listbox.pack(expand=True, fill="both", padx=10, pady=5, )
 
-        # Fake suppliers
-        self.suppliers = ["NCC01 - Công ty A", "NCC02 - Công ty B",
-                          "NCC03 - Công ty C", "NCC04 - Công ty D"]
-        for supplier in self.suppliers:
-            self.supplier_listbox.insert(tk.END, supplier)
+
+        for supplier in self.list_suppliers:
+            self.supplier_listbox.insert(tk.END, f"{supplier[0]} - {supplier[1]}")
 
         # Input Form
         input_frame = tk.Frame(main_frame, bg="#F5F5F5")
@@ -92,7 +90,7 @@ class NhapKhoForm(tk.Toplevel):
 
         ttk.Label(input_frame, text="Ngày nhập:").grid(row=3, column=0, padx=5, pady=5, sticky="e")
         self.ngay_nhap = ttk.Entry(input_frame, width=25)
-        self.ngay_nhap.insert(0, datetime.now().strftime("%d/%m/%Y"))
+        self.ngay_nhap.insert(0, datetime.now().strftime("%Y/%m/%d"))
         self.ngay_nhap.grid(row=3, column=1, padx=5, pady=5)
 
         ttk.Label(input_frame, text="Số lượng bán ra:").grid(row=4, column=0, padx=5, pady=5, sticky="e")
@@ -146,44 +144,28 @@ class NhapKhoForm(tk.Toplevel):
 
         # Lấy các giá trị từ form
         data = {
-            "san_pham": product,
-            "nha_cung_cap": supplier,
-            "sl_nhap": self.sl_nhap.get(),
-            "gia_nhap": self.gia_nhap.get(),
-            "sl_ton": self.sl_ton.get(),
+            "id_san_pham": int(product[0]), # id san pham
+            "id_nha_cung_cap": int(supplier[0]), #id nha cung cap
+            "sl_nhap": int(self.sl_nhap.get()),
+            "gia_nhap": float(self.gia_nhap.get()),
+            "sl_ton": int(self.sl_ton.get()),
             "ngay_nhap": self.ngay_nhap.get(),
-            "sl_ban": self.sl_ban.get(),
+            "sl_ban": int(self.sl_ban.get()),
             "lo_hang": self.lo_hang.get()
         }
 
-        # Validate dữ liệu
-        required_fields = {
-            "sl_nhap": "Số lượng nhập",
-            "gia_nhap": "Giá nhập",
-            "sl_ton": "Số lượng tồn kho",
-            "sl_ban": "Số lượng bán ra"
-        }
-
-        # Kiểm tra trường bắt buộc
-        for field, name in required_fields.items():
-            if not data[field].strip():
-                messagebox.showerror("Lỗi", f"{name} không được để trống")
-                return
-
-        # Kiểm tra định dạng số
-        if not all([
-            self.is_valid_number(data["sl_nhap"], "Số lượng nhập"),
-            self.is_valid_number(data["gia_nhap"], "Giá nhập"),
-            self.is_valid_number(data["sl_ton"], "Số lượng tồn kho"),
-            self.is_valid_number(data["sl_ban"], "Số lượng bán ra")
-        ]):
-            return
+        result_inserted = self.contrller_khohang.insertHistoryStockController(data)
+        if result_inserted:
+            messagebox.showinfo("Thành công", "Nhập kho thanh cong")
+            self.destroy()
+        else:
+            messagebox.showerror("Lỗi", "Nhập kho khong thanh cong")
 
         # Hiển thị thông tin
         info_message = (
             "Thông tin nhập kho:\n\n"
-            f"Sản phẩm: {data['san_pham']}\n"
-            f"Nhà cung cấp: {data['nha_cung_cap']}\n"
+            f"Sản phẩm: {data['id_san_pham']}\n"
+            f"Nhà cung cấp: {data['id_nha_cung_cap']}\n"
             f"Số lượng nhập: {data['sl_nhap']}\n"
             f"Giá nhập: {data['gia_nhap']} đ\n"
             f"Số lượng tồn: {data['sl_ton']}\n"

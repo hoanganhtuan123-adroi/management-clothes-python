@@ -1,3 +1,5 @@
+import random
+import string
 from database import Database
 from datetime import datetime
 class KhoHangModel:
@@ -32,6 +34,22 @@ class KhoHangModel:
             if hasattr(self, 'conn'):
                 conn.close()
 
+    def getAllSponsers(self):
+        try:
+            conn = self.db.get_connection()  # Lấy kết nối mới
+            cursor = conn.cursor()
+            query = """SELECT id, ma_nha_cung_cap FROM nhacungcap """
+            cursor.execute(query)
+            result = cursor.fetchall()
+            if not result:
+                return "Dữ liệu trống"
+            return result
+        except Exception as e:
+            raise Exception(f"An error occurred: {str(e)}")
+        finally:
+            if hasattr(self, 'conn'):
+                conn.close()
+
     def getHistoryTrade(self):
         try:
             conn = self.db.get_connection()  # Lấy kết nối mới
@@ -39,17 +57,14 @@ class KhoHangModel:
             query = """
                 SELECT 
                     lsk.id,
-                    kh.ma_nhap_hang,
                     sp.ma_sp,
                     lsk.so_luong,
                     lsk.loai_giao_dich,
                     lsk.ngay_giao_dich,
                     (lsk.gia * lsk.so_luong) AS tong_gia_tri
                 FROM lichsukho lsk
-                INNER JOIN khohang kh 
-                    ON kh.id = lsk.id_kho_hang
                 INNER JOIN sanpham sp 
-                    ON sp.id = kh.id_san_pham
+                    ON sp.id = lsk.id_san_pham
             """
             cursor.execute(query)
             result = cursor.fetchall()
@@ -62,32 +77,6 @@ class KhoHangModel:
         finally:
             if hasattr(self, 'conn'):
                 conn.close()
-
-    def generate_ma_nhap_hang(self):
-        try:
-            conn = self.db.get_connection()  # Lấy kết nối mới
-            cursor = conn.cursor()
-            # Lấy ngày hiện tại
-            current_date = datetime.now().strftime("%Y%m%d")
-            prefix = f"NH{current_date}"
-            # Truy vấn số lượng bản ghi hôm nay
-            query = f"""SELECT MAX(id) FROM khohang """
-
-            cursor.execute(query)
-            count = cursor.fetchone()[0]
-
-            # Tạo số thứ tự
-            sequence = count + 1
-            formatted_sequence = f"{sequence:03d}"  # Định dạng 3 chữ số
-
-            # Tạo mã nhập hàng
-            ma_nhap_hang = f"{prefix}{formatted_sequence}"
-            conn.close()
-            return ma_nhap_hang
-
-        except Exception as e:
-            raise Exception(f"Lỗi sinh mã nhập hàng: {str(e)}")
-
 
     def generate_ma_kho(self):
         try:
@@ -106,56 +95,156 @@ class KhoHangModel:
 
             # Tạo mã nhập hàng
             ma_kho = f"{prefix}{formatted_sequence}"
-            conn.close()
             return ma_kho
         except Exception as e:
             raise Exception(f"Lỗi sinh mã nhập hàng: {str(e)}")
 
-
+    # Trong phương thức them vao kho hang
     def insertStock(self, data):
+        conn = None
         try:
-            ma_nhap_hang = self.generate_ma_nhap_hang()
-            conn = self.db.get_connection()  # Lấy kết nối mới
+            conn = self.db.get_connection()
             cursor = conn.cursor()
+
+            # Sửa tên key trong data
+            query_pd = "SELECT gia_ban FROM sanpham WHERE id = %s"
+            cursor.execute(query_pd, (data['id_san_pham'],))  # Đúng key
+            result = cursor.fetchone()
+
+            if not result:
+                raise ValueError("Không tìm thấy sản phẩm")
+
+            gia_ban = result[0]
+
             query = """
-                INSERT into khohang (ma_nhap_hang, id_san_pham, id_nha_cung_cap, so_luong_nhap, so_luong_ton_kho, so_luong_ban_ra, ngay_nhap, gia_nhap, gia_ban) 
-                VALUES(%s, %s, %s,%s, %s, %s,%s, %s, %s)
+                INSERT INTO khohang 
+                (id_san_pham, id_nha_cung_cap, so_luong_nhap, 
+                 so_luong_ton_kho, so_luong_ban_ra, ngay_nhap, gia_nhap, gia_ban) 
+                VALUES(%s, %s, %s, %s, %s, %s, %s, %s)
             """
-            # Thực thi query với các tham số
+            # Sửa các key trong data
             cursor.execute(query, (
-                ma_nhap_hang,
-                data['id_san_pham'],
-                data['id_nha_cung_cap'],
-                data['so_luong_nhap'],
-                data['so_luong_ton_kho'],
-                data['so_luong_ban_ra'],
+                data['id_san_pham'],  # Sửa từ 'san_pham'
+                data['id_nha_cung_cap'],  # Sửa từ 'nha_cung_cap'
+                data['sl_nhap'],
+                data['sl_ton'],
+                data['sl_ban'],
                 data['ngay_nhap'],
                 data['gia_nhap'],
-                data['gia_ban']
+                gia_ban
             ))
 
-            inserted_id = cursor.lastrowid
 
-            # Commit transaction
             conn.commit()
-
-            return inserted_id
-
+            return
 
         except Exception as e:
-            raise Exception(f"An error occurred: {str(e)}")
+            raise Exception(f"Lỗi khi nhập kho: {str(e)}")
+
+    # Trong phương thức insertHistoryStock
+    def insertHistoryStock(self, data):
+        conn = None
+        try:
+            conn = self.db.get_connection()
+            cursor = conn.cursor()
+            # self.insertStock(data)
+            query = """
+                INSERT INTO lichsukho 
+                (id_san_pham, ma_kho, loai_giao_dich, gia, ngay_giao_dich, so_luong) 
+                VALUES(%s, %s, %s, %s, %s, %s)
+            """
+            # Sửa thứ tự parameters và syntax
+            cursor.execute(query, (
+                data['id_san_pham'],
+                data['lo_hang'],
+                'Nhập Kho',
+                data['gia_nhap'],
+                data['ngay_nhap'],
+                data['sl_nhap']
+            ))
+
+            conn.commit()
+            return cursor.rowcount > 0  # Sửa rowcount thành attribute
+
+        except Exception as e:
+            print(f"Chi tiết lỗi: {e}")
+            raise Exception(f"Lỗi lịch sử kho: {e}")  # Thông báo lỗi chính xác
         finally:
-            if hasattr(self, 'conn'):
+            if conn:
                 conn.close()
 
-    def insertHistoryStock(self, id_kho_hang):
-        try:
-            conn = self.db.get_connection()  # Lấy kết nối mới
-            cursor = conn.cursor()
-            ma_kho = self.generate_ma_kho()
-            query = "INSERT INTO lichsukho (id_kho_hang, ma_kho, loai_giao_dich, gia, ngay_giao_dich, so_luong) VALUES(%s, %s,'Nhập Kho', %s,%s, %s )"
-            cursor.execute(query,(id_kho_hang,ma_kho, ))
+    def generate_random_ma_kho(self,length=6):
+        characters = string.ascii_uppercase + string.digits
 
-            conn.close()
+        # Sinh chuỗi ngẫu nhiên
+        random_part = ''.join(random.choices(characters, k=length))
+
+        # Format mã kho
+        return f"KHO-{random_part}"
+
+    def xuatKho(self, data):
+        conn = None
+        try:
+            conn = self.db.get_connection()
+            cursor = conn.cursor()
+
+            # 1. Lấy giá bán từ bảng sanpham
+            cursor.execute("SELECT gia_ban FROM sanpham WHERE id = %s", (data['id_san_pham'],))
+            result = cursor.fetchone()
+
+            if not result:
+                raise Exception("Không tìm thấy sản phẩm")
+            gia_ban = result[0]
+
+            # 2. Kiểm tra tồn kho
+            cursor.execute("""
+                SELECT so_luong_ton_kho 
+                FROM khohang 
+                WHERE id_san_pham = %s
+            """, (data['id_san_pham'],))
+
+            ton_kho_result = cursor.fetchone()
+            if not ton_kho_result:
+                raise Exception("Không tìm thấy tồn kho cho sản phẩm này")
+
+            ton_kho = ton_kho_result[0]
+
+            if ton_kho < data['so_luong_xuat']:
+                raise Exception("Số lượng xuất vượt quá tồn kho")
+
+            # 3. Cập nhật tồn kho
+            new_ton_kho = ton_kho - data['so_luong_xuat']
+            cursor.execute("""
+                UPDATE khohang 
+                SET so_luong_ton_kho = %s 
+                WHERE id_san_pham = %s
+            """, (new_ton_kho, data['id_san_pham']))
+            ma_kho = self.generate_random_ma_kho()
+            # 4. Ghi lịch sử với id_san_pham và giá
+            cursor.execute("""
+                INSERT INTO lichsukho (
+                    id_san_pham, 
+                    ma_kho,
+                    loai_giao_dich, 
+                    gia, 
+                    ngay_giao_dich, 
+                    so_luong
+                ) VALUES (%s, %s ,'Xuất kho', %s, %s, %s)
+            """, (
+                data['id_san_pham'],
+                ma_kho,
+                gia_ban,
+                data['ngay_xuat'],
+                data['so_luong_xuat']
+            ))
+
+            conn.commit()
+            return True
+
         except Exception as e:
-            raise Exception(f"Lỗi sinh mã nhập hàng: {str(e)}")
+            if conn:
+                conn.rollback()
+            raise e
+        finally:
+            if conn:
+                conn.close()

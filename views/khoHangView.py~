@@ -3,7 +3,6 @@ from tkinter import ttk, messagebox
 from controllers.khoHangController import KhoHangController
 from config.commonDef import  CommonDef
 from views.forms.formNhapKho import NhapKhoForm
-from views.forms.formXuatKho import XuatKhoForm
 class KhoHangFrame(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent, bg="white")
@@ -34,7 +33,7 @@ class KhoHangFrame(tk.Frame):
             side="left", padx=5)
         tk.Button(filter_frame, text="Nhập kho", font=("Helvetica", 10), bg="#3498db", fg="white", width=15, command=self.open_form_nhapkho).pack(
             side="left", padx=5)
-        tk.Button(filter_frame, text="Xuất kho", font=("Helvetica", 10), bg="#3498db", fg="white",width=15, command=self.open_form_xuatkho).pack(side="left", padx=5)
+        tk.Button(filter_frame, text="Xuất kho", font=("Helvetica", 10), bg="#3498db", fg="white",width=15).pack(side="left", padx=5)
 
         # Ô tìm kiếm
         search_frame = tk.Frame(filter_frame, bg="#ffffff")
@@ -153,6 +152,3 @@ class KhoHangFrame(tk.Frame):
 
     def open_form_nhapkho(self):
         NhapKhoForm(self)
-
-    def open_form_xuatkho(self):
-        XuatKhoForm(self)
