@@ -7,18 +7,29 @@ class SanPhamFrame(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent, bg="white")
         self.controller = SanPhamController()
-        self.list_products = self.getProducts()
-        # Frame chứa tiêu đề và nút "Tạo khách hàng"
+
+        self.create_ui()
+        self.create_table()
+        self.update_treeview()
+        # Gắn sự kiện tùy chỉnh để làm mới Treeview
+
+    def create_ui(self):
+        # Frame chứa tiêu đề và nút "Thêm sản phẩm"
         header_frame = tk.Frame(self, bg="white")
         header_frame.pack(fill=tk.X, padx=10, pady=10)
 
-        # Tiêu đề "Danh sách khách hàng"
+        # Tiêu đề "Danh sách sản phẩm"
         label = tk.Label(header_frame, text="Danh sách sản phẩm", font=("Arial", 16, "bold"), bg="white")
         label.pack(side=tk.LEFT)
 
-        # Nút "Tạo sản phẩm
+        # Nút "Thêm sản phẩm"
         create_button = tk.Button(header_frame, text=" Thêm sản phẩm", font=("Arial", 12, "bold"),
                                   bg="#38b6ff", fg="white", bd=0, padx=10, pady=5, command=self.createProduct)
+        create_button.pack(side=tk.RIGHT)
+
+        # Nút "Thêm sản phẩm"
+        create_button = tk.Button(header_frame, text="Làm mới", font=("Arial", 12, "bold"),
+                                  bg="#38b6ff", fg="white", bd=0, padx=10, pady=5, command=self.update_treeview)
         create_button.pack(side=tk.RIGHT)
 
         # Tạo thanh tìm kiếm và nút tìm kiếm
@@ -36,7 +47,8 @@ class SanPhamFrame(tk.Frame):
                                   bg="#38b6ff", fg="white", bd=0, padx=20, pady=5, command=self.search_products)
         search_button.pack(side=tk.RIGHT)
 
-        # Tìm kiếm khách hàng
+    def create_table(self):
+        # Cấu hình style cho Treeview
         style = ttk.Style()
         style.configure("Treeview",
                         font=("Arial", 12),
@@ -48,6 +60,7 @@ class SanPhamFrame(tk.Frame):
                         background="#f0f0f0",
                         foreground="black")
 
+        # Định nghĩa các cột
         columns = ("ma_san_pham", "ten_san_pham", "gia_ban", "kich_thuoc")
         self.tree = ttk.Treeview(self, columns=columns, show="headings")
         self.tree.heading("ma_san_pham", text="Mã sản phẩm")
@@ -55,21 +68,20 @@ class SanPhamFrame(tk.Frame):
         self.tree.heading("gia_ban", text="Giá bán (VND)")
         self.tree.heading("kich_thuoc", text="Kích thước")
 
+        # Thiết lập kích thước cột
         self.tree.column("ma_san_pham", width=200, anchor="w")
         self.tree.column("ten_san_pham", width=250, anchor="w")
         self.tree.column("gia_ban", width=150, anchor="w")
         self.tree.column("kich_thuoc", width=150, anchor="w")
 
+        # Đặt bảng vào giao diện và gắn sự kiện nhấp đúp
         self.tree.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        self.tree.bind("<<TreeviewSelect>>", self.on_row_select)
 
-        self.update_treeview(self.list_products)
-        self.tree.bind("<Double-Button-1>", self.on_row_select)
+    def update_treeview(self, products=None ):
+        if products is None:
+            products = self.controller.getProductsController()
 
-    def getProducts(self):
-        products = self.controller.getProductsController()
-        return products
-
-    def update_treeview(self, products):
         for item in self.tree.get_children():
             self.tree.delete(item)
 
@@ -85,22 +97,22 @@ class SanPhamFrame(tk.Frame):
         else:
             self.tree.insert("", tk.END, values=["Không có sản phẩm", "", "", ""])
 
-    def reload_data(self):
-        # Reload the data
-        self.list_products = self.getProducts()
-        self.update_treeview(self.list_products)
 
     def on_row_select(self, event):
         # Get selected row data
-        selected_item = self.tree.selection()[0]
-        row_data = self.tree.item(selected_item)["tags"][0]
-        print("check row_data", row_data)
-        ProductForm(self, row_data)
+        selected_item = self.tree.selection()
+        if selected_item:
+            selected_item = selected_item[0]
+            row_data = self.tree.item(selected_item)["tags"][0]
+            ProductForm(self, row_data)
+        else:
+            print("No item selected")
 
     def search_products(self):
         query = self.search_entry.get().lower()
         # Filter the customers based on the query
-        filtered_product = [product for product in self.list_products if
+        all_products = self.controller.getProductsController()
+        filtered_product = [product for product in all_products if
                               query in product['ten_sp'].lower() or
                               query in product['ma_sp'].lower()]
 
@@ -113,9 +125,10 @@ class SanPhamFrame(tk.Frame):
 
     def createProduct(self):
         FormTaoSanPham(self)
-if __name__ == "__main__":
-    root = tk.Tk()
-    root.geometry("1000x600")
-    app = SanPhamFrame(root, None)
-    app.pack(fill=tk.BOTH, expand=True)
-    root.mainloop()
+
+# if __name__ == "__main__":
+#     root = tk.Tk()
+#     root.geometry("1000x600")
+#     app = SanPhamFrame(root)
+#     app.pack(fill=tk.BOTH, expand=True)
+#     root.mainloop()

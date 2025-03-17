@@ -6,6 +6,7 @@ from controllers.sanPhamController import SanPhamController
 class ProductForm(tk.Toplevel):
     def __init__(self, parent, product_data=None):
         super().__init__(parent)
+        self.parent = parent
         self.commonDef = CommonDef()
         self.controller = SanPhamController()
         self.img_list = []
@@ -34,7 +35,6 @@ class ProductForm(tk.Toplevel):
             "mo_ta": self.product_data.get("mo_ta", ""),
             "hinh_anh": self.product_data.get("hinh_anh").split(", ") if self.product_data.get("hinh_anh") else []
         }
-        print("check data img >>> ", self.product_data["hinh_anh"])
 
         # Thiết lập cửa sổ con
         self.title("Thông tin sản phẩm")
@@ -260,6 +260,7 @@ class ProductForm(tk.Toplevel):
         isUpdated = self.controller.updateProductController(data_update)
         if isUpdated:
             messagebox.showinfo("Thành công", "Sửa thống tin sản phẩm thành công.")
+            self.parent.update_treeview()
             self.destroy()
         else:
             messagebox.showerror("Lỗi", "Sửa thống tin sản phẩm thất bại.")

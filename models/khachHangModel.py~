@@ -6,6 +6,7 @@ class KhachHangModel:
     def getAllCustomersModel(self):
         try:
             conn = self.db.get_connection()
+
             if not conn.is_connected():
                 print("Connection lost. Attempting to reconnect...")
                 conn.reconnect()
@@ -26,7 +27,7 @@ class KhachHangModel:
                         "hinhanh": customer[6]
                     }
                     listCustomers.append(customer_dict)
-            conn.close()
+            cursor.close()
             return listCustomers
         except Exception as e:
             raise Exception(f"Lỗi trong quá trình xác thực: {e}")

@@ -165,7 +165,7 @@ class NhapKhoForm(tk.Toplevel):
         result_inserted = self.contrller_khohang.insertHistoryStockController(data)
         if result_inserted:
             messagebox.showinfo("Thành công", "Nhập kho thanh cong")
-            self.parent.update_table_kiem_kho(self.parent.controller.getAllHistoryController())
+            self.parent.update_table_kiem_kho(self.controller.getAllHistoryController())
             self.destroy()
         else:
             messagebox.showerror("Lỗi", "Nhập kho khong thanh cong")

@@ -9,6 +9,7 @@ from controllers.khachHangController import KhachHangController
 class FormTTKhachHang(tk.Toplevel):
     def __init__(self, parent, customer_data=None):
         super().__init__(parent)
+        self.parent = parent
         self.customer_data = ast.literal_eval('{' + customer_data + '}')
         self.controller = KhachHangController()
         self.title("Xem thông tin khách hàng")
@@ -132,8 +133,10 @@ class FormTTKhachHang(tk.Toplevel):
             "hinhanh": getattr(self, 'image_path', "")
         }
         isSuccess = self.controller.updateCustomerController(customer_data)
+        print(isSuccess)
         if isSuccess:
             messagebox.showinfo("Thành công", "Sửa thông tin khách hàng thành công.")
+            self.parent.update_treeview()
             self.destroy()
         else:
             messagebox.showerror("Lỗi", "Sửa khách hàng thất bại.")
@@ -144,6 +147,7 @@ class FormTTKhachHang(tk.Toplevel):
         self.address_entry.insert(0, self.customer_data['diachi'])
         self.email_entry.insert(0, self.customer_data['email'])
         self.gender_var.set(self.customer_data['gioitinh'])
+        print("Image path:", self.customer_data.get('hinhanh'))
         if self.customer_data.get('hinhanh'):
             self.display_image(self.customer_data['hinhanh'])
 

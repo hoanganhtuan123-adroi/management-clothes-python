@@ -10,6 +10,7 @@ from config.commonDef import CommonDef
 class CreateOrderForm(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
+        self.parent = parent
         self.title("Tạo đơn hàng")
         self.geometry("1200x600")
         self.config(bg="#f5f6fa")
@@ -240,6 +241,7 @@ class CreateOrderForm(tk.Toplevel):
             total = item["product"]["gia_ban"] * item["quantity_var"].get()
             item["total_price"].set(f"{self.configDef.format_number(total)}")
 
+    # Tạo đơn mới
     def create_order(self):
         if not self.order_items:
             messagebox.showwarning("Cảnh báo", "Vui lòng thêm sản phẩm!")
@@ -255,6 +257,8 @@ class CreateOrderForm(tk.Toplevel):
         data = self.orderController.createOrderController(order_data)
         if data:
             messagebox.showinfo("Thành công", "Tạo đơn hàng thành công!")
+            new_data = self.parent.get_orders()
+            self.parent.update_treeview(new_data)
             self.destroy()
         else:
             messagebox.showerror("Lỗi", "Tạo đơn hàng thất bại!")
@@ -300,6 +304,7 @@ class CreateOrderForm(tk.Toplevel):
 
     def show_customer_details(self, event):
         selection = self.customer_listbox.curselection()
+        print(selection)
         selection_text = self.customer_listbox.get(selection)
         selection_name = selection_text.split('-')[1].strip()
 

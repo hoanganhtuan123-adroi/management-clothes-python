@@ -86,7 +86,7 @@ class MainView(tk.Toplevel):
 
         # Nút Đăng xuat
         self.dang_xuat_icon = PhotoImage(file="assets/img/icon/iconDangXuat.png")
-        self.btn_dang_xuat = tk.Button(self.sidebar_frame, text="  Phân Quyền", image=self.dang_xuat_icon,
+        self.btn_dang_xuat = tk.Button(self.sidebar_frame, text="  Đăng xuất", image=self.dang_xuat_icon,
                                         compound='left',
                                         anchor='w', borderwidth=0,
                                         font=("Arial", 14, "bold"))

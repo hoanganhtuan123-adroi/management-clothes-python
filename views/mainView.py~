@@ -12,7 +12,7 @@ class MainView(tk.Toplevel):
     def __init__(self, master=None):
         super().__init__(master)
         self.title("Giao diện chính")
-        self.geometry("1100x600")
+        self.geometry("1100x1000")
 
         # SIDEBAR bên trái
         self.sidebar_frame = tk.Frame(self, bg="#f0f0f0", width=200, padx=10, pady=10)
@@ -86,9 +86,9 @@ class MainView(tk.Toplevel):
 
         # Nút Đăng xuat
         self.dang_xuat_icon = PhotoImage(file="assets/img/icon/iconDangXuat.png")
-        self.btn_dang_xuat = tk.Button(self.sidebar_frame, text="  Phân Quyền", image=self.dang_xuat_icon,
+        self.btn_dang_xuat = tk.Button(self.sidebar_frame, text="  Đăng xuất", image=self.dang_xuat_icon,
                                         compound='left',
-                                        anchor='w', borderwidth=0,
+                                        anchor='s', borderwidth=0,
                                         font=("Arial", 14, "bold"))
         self.btn_dang_xuat.pack(fill=tk.X, padx=10, pady=5)
         # CONTENT bên phải

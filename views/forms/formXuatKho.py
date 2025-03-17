@@ -7,6 +7,7 @@ from controllers.khoHangController import KhoHangController
 class XuatKhoForm(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
+        self.parent = parent
         self.title("Quản lý Xuất Kho")
         self.geometry("800x600")
         self.configure(bg="#F5F5F5")
@@ -120,6 +121,7 @@ class XuatKhoForm(tk.Toplevel):
             result = self.controller_kho.xuatKhoController(data)
             if result:
                 messagebox.showinfo("Thành công", "Xuất kho thành công")
+                self.parent.update_table_kiem_kho(self.parent.controller.getAllHistoryController())
                 self.destroy()
             else:
                 messagebox.showerror("Lỗi", "Xuất kho không thành công")

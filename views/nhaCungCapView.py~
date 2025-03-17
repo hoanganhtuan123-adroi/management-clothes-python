@@ -9,7 +9,6 @@ class NhaCungCapFrame(tk.Frame):
         self.contrller = NhaCungCapController()
         self.create_ui()
         self.create_table()
-        self.update_treeview()
 
     def create_ui(self):
         """Tạo giao diện cho cửa sổ danh sách đơn hàng."""
@@ -87,6 +86,7 @@ class NhaCungCapFrame(tk.Frame):
                 self.tree.insert("", tk.END, values=values, tags=(row))
         else:
             self.tree.insert("", tk.END, values=["Không có nhà cung cấp", "", "", "", "", ""])
+
 
     def on_tree_select(self, event):
         selected_items = self.tree.selection()

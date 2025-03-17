@@ -6,6 +6,7 @@ from controllers.sanPhamController import SanPhamController
 class ProductForm(tk.Toplevel):
     def __init__(self, parent, product_data=None):
         super().__init__(parent)
+        self.parent = parent
         self.commonDef = CommonDef()
         self.controller = SanPhamController()
         self.img_list = []
@@ -193,6 +194,7 @@ class ProductForm(tk.Toplevel):
                isDeleted = self.controller.deleteProductController(id)
                if isDeleted:
                  messagebox.showinfo("Thành công", "Xóa sản phẩm thành công.")
+                 self.parent.update_treeview()
                  self.destroy()
                else:
                  messagebox.showerror("Lỗi", "Xóa sản phẩm thất bại.")
@@ -259,6 +261,7 @@ class ProductForm(tk.Toplevel):
         isUpdated = self.controller.updateProductController(data_update)
         if isUpdated:
             messagebox.showinfo("Thành công", "Sửa thống tin sản phẩm thành công.")
+            self.parent.update_treeview()
             self.destroy()
         else:
             messagebox.showerror("Lỗi", "Sửa thống tin sản phẩm thất bại.")

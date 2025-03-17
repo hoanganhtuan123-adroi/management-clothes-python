@@ -10,13 +10,12 @@ class SanPhamController:
             return products
         else:
             return []
-
-    def createProductController(self, data):
-        try:
-            isCreated = self.product_model.createProductModel(data)
-            return isCreated
-        except Exception as e:
-            print(f"Lỗi khi tạo sản phẩm: {e}")
+        
+    def createProductController(self,data):
+        isCreated = self.product_model.createProductModel(data)
+        if isCreated:
+            return True
+        else:
             return False
 
     def deleteProductController(self, id):

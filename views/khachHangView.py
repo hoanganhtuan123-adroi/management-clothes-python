@@ -63,16 +63,18 @@ class KhachHangFrame(tk.Frame):
         self.tree.column("gioi_tinh", width=100, anchor="w")
 
         self.tree.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
-
-        self.update_treeview(self.listCustomers)
         self.tree.bind("<Double-Button-1>", self.on_row_select)
+        self.update_treeview()
 
-    def update_treeview(self, customers):
+
+    def update_treeview(self, listCustomers=None):
         for item in self.tree.get_children():
             self.tree.delete(item)
+        if listCustomers is None:
+           listCustomers = self.controller.getAllCustomersController()
 
-        if customers:
-            for row in customers:
+        if listCustomers:
+            for row in listCustomers:
                 values = (
                     row['hoten'],  # Khách hàng
                     row['sdt'],  # Điện thoại
@@ -99,13 +101,9 @@ class KhachHangFrame(tk.Frame):
             # If no customers are found, show a "No customers found" message
             self.update_treeview([])
 
-    def reload_data(self):
-        # Reload the data
-        self.listCustomers = self.getAllCustomers()
-        self.update_treeview(self.listCustomers)
-
     def getAllCustomers(self):
         listCustomers = self.controller.getAllCustomersController()
+        print("Danh sách khách hàng:", listCustomers)  # Debug dữ liệu trả về
         return listCustomers
 
     def createCustomer(self):
@@ -113,9 +111,14 @@ class KhachHangFrame(tk.Frame):
 
     def on_row_select(self, event):
         # Get selected row data
-        selected_item = self.tree.selection()[0]
-        row_data = self.tree.item(selected_item)["tags"][0]
-        FormTTKhachHang(self, customer_data=row_data)
+        selected_item = self.tree.selection()
+        if selected_item:
+            selected_item = self.tree.selection()[0]
+            row_data = self.tree.item(selected_item)["tags"][0]
+            print("Row data parent:", row_data)
+            FormTTKhachHang(self, customer_data=row_data)
+        else:
+            print("No item selected")
 
 if __name__ == "__main__":
     root = tk.Tk()

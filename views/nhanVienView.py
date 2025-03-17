@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-from tkinter import PhotoImage
 from controllers.nhanVienController import NhanVienController  # Update to your employee controller
 from views.forms.formTaoNhanVien import FormTaoNhanVien  # Update form for creating an employee
 from views.forms.formTTNhanVien import FormTTNhanVien  # Update form for employee details
@@ -128,22 +127,20 @@ class NhanVienFrame(tk.Frame):
             self.update_treeview([])
 
     def reload_data(self):
-        # Reload the data
         self.listEmployees = self.getAllEmployees()
         self.update_treeview(self.listEmployees)
 
     def getAllEmployees(self):
-        listEmployees = self.controller.getAllEmployeesController()  # Fetch employees
+        listEmployees = self.controller.getAllEmployeesController()
         return listEmployees
 
     def createEmployee(self):
-        FormTaoNhanVien(self)  # Open employee creation form
+        FormTaoNhanVien(self)
 
     def on_row_select(self, event):
-        # Get selected row data
         selected_item = self.tree.selection()[0]
         row_data = self.tree.item(selected_item)["tags"][0]
-        FormTTNhanVien(self, employee_data=row_data)  # Open employee detail form
+        FormTTNhanVien(self, employee_data=row_data)
 
 
 if __name__ == "__main__":

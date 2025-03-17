@@ -10,6 +10,9 @@ class DonHangModel:
         conn = self.db.get_connection()
         if not conn:
             raise Exception("Lỗi kết nối cơ sở dữ liệu")
+        if not conn.is_connected():
+            print("Connection lost. Attempting to reconnect...")
+            conn.reconnect()
         try:
             query = f"""
                      SELECT dh.id, dh.ma_don_hang,  sp.ten_sp, dh.ngay_dat, tt.trang_thai_thanh_toan, dh.trang_thai_don, kh.ho_va_ten, sp.gia_ban,  ctdh.so_luong, dh.tong_tien from donhang dh 
@@ -21,7 +24,7 @@ class DonHangModel:
             cursor = conn.cursor()
             cursor.execute(query)
             result = cursor.fetchall()
-            cursor.close()
+            conn.close()
             return result
         except:
             raise Exception("Lỗi trong quá trình truy vấn")
@@ -30,6 +33,9 @@ class DonHangModel:
         conn = self.db.get_connection()
         if not conn:
             raise Exception("Lỗi kết nối cơ sở dữ liệu")
+        if not conn.is_connected():
+            print("Connection lost. Attempting to reconnect...")
+            conn.reconnect()
         try:
             query = f"""
                        SELECT dh.id, dh.ma_don_hang,  sp.ten_sp, dh.ngay_dat, tt.trang_thai_thanh_toan, dh.trang_thai_don, kh.ho_va_ten, sp.gia_ban,  ctdh.so_luong, dh.tong_tien from donhang dh 
@@ -42,7 +48,7 @@ class DonHangModel:
             cursor = conn.cursor()
             cursor.execute(query)
             result = cursor.fetchall()
-            cursor.close()
+            conn.close()
             return result
         except:
             raise Exception("Lỗi trong quá trình truy vấn")
@@ -51,6 +57,9 @@ class DonHangModel:
         conn = self.db.get_connection()
         if not conn:
             raise Exception("Loi ket noi csdl")
+        if not conn.is_connected():
+            print("Connection lost. Attempting to reconnect...")
+            conn.reconnect()
         try:
             query = f"""
             SELECT dh.id, dh.ma_don_hang,  sp.ten_sp, dh.ngay_dat, tt.trang_thai_thanh_toan, dh.trang_thai_don, kh.ho_va_ten, sp.gia_ban,  ctdh.so_luong, dh.tong_tien from donhang dh 
@@ -62,12 +71,11 @@ class DonHangModel:
             cursor = conn.cursor()
             cursor.execute(query)
             result = cursor.fetchall()
+            conn.close()
             if result:
                 return result
-                cursor.close()
             else:
                 return []
-                cursor.close()
         except:
             raise Exception("Loi trong qua trinh truy van")
 
@@ -75,6 +83,9 @@ class DonHangModel:
         conn = self.db.get_connection()
         if not conn:
             raise Exception("Loi ket noi csdl")
+        if not conn.is_connected():
+            print("Connection lost. Attempting to reconnect...")
+            conn.reconnect()
         try:
             query = f"""
               SELECT dh.id, dh.ma_don_hang,  sp.ten_sp, dh.ngay_dat, tt.trang_thai_thanh_toan, dh.trang_thai_don, kh.ho_va_ten, sp.gia_ban,  ctdh.so_luong, dh.tong_tien from donhang dh 
@@ -86,12 +97,11 @@ class DonHangModel:
             cursor = conn.cursor()
             cursor.execute(query)
             result = cursor.fetchall()
+            conn.close()
             if result:
                 return result
-                cursor.close()
             else:
                 return []
-                cursor.close()
         except:
             raise Exception("Loi trong qua trinh truy van")
 
@@ -127,7 +137,7 @@ class DonHangModel:
             ))
 
             conn.commit()
-            cursor.close()
+            conn.close()
             return True
         except:
             raise Exception("Loi trong qua trinh truy van")

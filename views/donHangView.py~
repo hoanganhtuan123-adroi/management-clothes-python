@@ -93,6 +93,10 @@ class DonHangFrame(tk.Frame):
         # Nút tạo đơn mới
         tk.Button(main_frame, text="Xóa đơn hàng", font=("Helvetica", 12), bg="#3498db", fg="white",command= self.delete_selected_order).pack(anchor="e",pady=5)
 
+    def get_orders(self):
+        list_orders = self.controller.getOrdersController()
+        return list_orders
+
     def update_treeview(self, orders):
         # Xóa dữ liệu cũ
         for item in self.tree.get_children():
@@ -142,10 +146,9 @@ class DonHangFrame(tk.Frame):
             self.selected_id_delete = values[0]
 
     def delete_selected_order(self):
-        print(self.selected_id_delete)
-        # if self.selected_id_delete is not None:
-        #     # Gọi hàm xóa
-        #     self.delete_order(self.selected_id_delete)
+        if self.selected_id_delete is not None:
+            # Gọi hàm xóa
+            self.delete_order(self.selected_id_delete)
 
     def delete_order(self, id):
         isConfirm =  messagebox.askyesno("Thông báo", "Bạn có chắc chắn xóa đơn hàng này không?")

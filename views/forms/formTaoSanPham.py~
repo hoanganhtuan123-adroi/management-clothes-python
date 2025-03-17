@@ -21,14 +21,6 @@ class FormTaoSanPham(tk.Toplevel):
 
         self.create_widgets()
 
-        # Center the window
-        # self.update_idletasks()
-        # width = self.winfo_width()
-        # height = self.winfo_height()
-        # x = (self.winfo_screenwidth() // 2) - (width // 2)
-        # y = (self.winfo_screenheight() // 2) - (height // 2)
-        # self.geometry('{}x{}+{}+{}'.format(width, height, x, y))
-
         # Make sure this window stays on top of its parent
         self.transient(parent)
         self.grab_set()
@@ -229,16 +221,21 @@ class FormTaoSanPham(tk.Toplevel):
 
         # Validate data
         errors = self.validate_data(product_data)
-        if len(errors) == 0:
-            isSuccess = self.controller.createProductController(product_data)
-            if isSuccess:
-             messagebox.showinfo("Thông báo", "Thêm sản phẩm thành công!")
+        if not errors:
+            try:
+                print("Product data to save:", product_data)  # Debug dữ liệu gửi đi
+                isSuccess = self.controller.createProductController(product_data)
+                if isSuccess:
+                    messagebox.showinfo("Thông báo", "Thêm sản phẩm thành công!")
+                    self.parent.update_treeview()
+                    self.destroy()
+                else:
+                    messagebox.showerror("Lỗi", "Không thể thêm sản phẩm")
+            except Exception as e:
+                messagebox.showerror("Lỗi", f"Lỗi hệ thống: {str(e)}")
         else:
-            messagebox.showerror("Lỗi", errors[0])
+            messagebox.showerror("Lỗi", "\n".join(errors))
 
-        # Refresh the parent's data and close the form
-        self.parent.reload_data()
-        self.destroy()
 
     def validate_data(self, product_data):
         errors = []

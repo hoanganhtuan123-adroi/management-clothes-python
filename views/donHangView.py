@@ -93,6 +93,10 @@ class DonHangFrame(tk.Frame):
         # Nút tạo đơn mới
         tk.Button(main_frame, text="Xóa đơn hàng", font=("Helvetica", 12), bg="#3498db", fg="white",command= self.delete_selected_order).pack(anchor="e",pady=5)
 
+    def get_orders(self):
+        list_orders = self.controller.getOrdersController()
+        return list_orders
+
     def update_treeview(self, orders):
         # Xóa dữ liệu cũ
         for item in self.tree.get_children():
@@ -159,6 +163,6 @@ class DonHangFrame(tk.Frame):
 if __name__ == "__main__":
     root = tk.Tk()
     root.geometry("1000x600")
-    app = DonHangFrame(root, None)
+    app = DonHangFrame(root)
     app.pack(fill=tk.BOTH, expand=True)
     root.mainloop()

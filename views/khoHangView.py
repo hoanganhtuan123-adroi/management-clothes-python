@@ -79,6 +79,7 @@ class KhoHangFrame(tk.Frame):
 
         listProducts = self.controller.getAllProductsController()
         self.update_table_ton_kho(listProducts)
+
     # Đẩy giá trị vào bảng tồn kho
     def update_table_ton_kho(self, listProducts):
         # Xóa dữ liệu cũ

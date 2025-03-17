@@ -31,7 +31,6 @@ class SanPhamModel:
                     }
                     products_list.append(product_list)
             cursor.close()
-            conn.close()
             return products_list
         except Exception as e:
             raise Exception(f"Lỗi trong quá trình xác thực: {e}")
