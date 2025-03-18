@@ -7,6 +7,7 @@ from controllers.nhanVienController import NhanVienController  # Change to NhanV
 class FormTaoNhanVien(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
+        self.parent = parent
         self.controller = NhanVienController()
         self.title("Thêm nhân viên mới")
         self.configure(bg="white")
@@ -45,8 +46,23 @@ class FormTaoNhanVien(tk.Toplevel):
         self.phone_entry.grid(row=4, column=1, sticky="w", padx=0, pady=5)
 
         tk.Label(form_frame, text="Chức vụ", font=("Arial", 12), bg="white").grid(row=1, column=2, sticky="e", padx=(20, 10), pady=5)
-        self.position_entry = ttk.Entry(form_frame, font=("Arial", 12), style="TEntry", width=20)
-        self.position_entry.grid(row=1, column=3, sticky="w", padx=0, pady=5)
+        self.position_combobox = ttk.Combobox(form_frame, font=("Arial", 12), width=20, state="readonly")
+        self.position_combobox.grid(row=1, column=3, sticky="w", padx=0, pady=5)
+
+        # Thêm các lựa chọn vào Listbox
+        positions = ["Nhân viên", "Quản lý", "Giám đốc", "Kế toán"]
+        self.position_combobox['values'] = positions
+        self.position_combobox.set(positions[0])  # Đặt mục đầu tiên làm mặc định
+
+        tk.Label(form_frame, text="Mức lương", font=("Arial", 12), bg="white").grid(row=2, column=2, sticky="e",
+                                                                                  padx=(20, 10), pady=5)
+        self.salary_entry = ttk.Entry(form_frame, font=("Arial", 12), style="TEntry", width=20)
+        self.salary_entry.grid(row=2, column=3, sticky="w", padx=0, pady=5)
+
+        tk.Label(form_frame, text="Địa chỉ", font=("Arial", 12), bg="white").grid(row=3, column=2, sticky="e",
+                                                                                    padx=(20, 10), pady=5)
+        self.address_text = tk.Text(form_frame, font=("Arial", 12), width=20, height=4, wrap=tk.WORD)
+        self.address_text.grid(row=3, column=3, sticky="w", padx=0, pady=5)
 
         separator = ttk.Separator(self, orient="horizontal")
         separator.pack(fill=tk.X, padx=20, pady=10)
@@ -59,7 +75,6 @@ class FormTaoNhanVien(tk.Toplevel):
 
         self.cancel_button = ttk.Button(button_frame, text="Hủy", style="Cancel.TButton", command=self.cancel)
         self.cancel_button.pack(side=tk.LEFT, padx=10)
-
 
     def validate_form(self):
         if not self.employee_id_entry.get():
@@ -74,8 +89,8 @@ class FormTaoNhanVien(tk.Toplevel):
         if not self.phone_entry.get():
             messagebox.showerror("Lỗi", "Vui lòng nhập số điện thoại.")
             return False
-        if not self.position_entry.get():
-            messagebox.showerror("Lỗi", "Vui lòng nhập chức vụ.")
+        if not self.address_text.get("1.0", tk.END).strip():
+            messagebox.showerror("Lỗi", "Vui lòng nhập địa chỉ.")
             return False
         return True
 
@@ -87,12 +102,16 @@ class FormTaoNhanVien(tk.Toplevel):
             "ma_nhan_vien": self.employee_id_entry.get(),
             "ho_ten": self.name_entry.get(),
             "email": self.email_entry.get(),
-            "chuc_vu": self.position_entry.get(),
-            "dien_thoai": self.phone_entry.get()
+            "chuc_vu": self.position_combobox.get(),
+            "dien_thoai": self.phone_entry.get(),
+            "dia_chi" : self.address_text.get("1.0", tk.END).strip(),
+            "luong": self.salary_entry.get(),
         }
+        print("Data:", employee_data)
         isSuccess = self.controller.createEmployeeController(employee_data)  # Use createEmployeeController
         if isSuccess:
             messagebox.showinfo("Thông báo", "Tạo nhân viên thành công!")
+            self.parent.reload_data()
             self.clear_form()
         else:
             messagebox.showerror("Lỗi", "Tạo nhân viên thất bại!")
@@ -105,7 +124,7 @@ class FormTaoNhanVien(tk.Toplevel):
         self.name_entry.delete(0, tk.END)
         self.email_entry.delete(0, tk.END)
         self.phone_entry.delete(0, tk.END)
-        self.position_entry.delete(0, tk.END)
+        self.position_combobox.delete(0, tk.END)
 
 if __name__ == "__main__":
     root = ThemedTk(theme="arc")

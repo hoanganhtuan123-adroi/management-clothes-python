@@ -27,7 +27,3 @@ class NhanVienController:
             return True
         else:
             return False
-
-    def getAllEmployeesByIDController(self, id):
-        employee = self.employee_model.getAllEmployeesByIDModel(id)
-        return employee

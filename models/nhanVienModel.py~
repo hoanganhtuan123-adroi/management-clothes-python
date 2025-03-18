@@ -100,11 +100,9 @@ class NhanVienModel:
         conn = self.db.get_connection()
         if not conn:
             raise Exception("Lỗi kết nối cơ sở dữ liệu")
-        if not conn.is_connected():
-            conn.reconnect()
         try:
             cursor = conn.cursor()
-            query = "DELETE FROM nhanvien WHERE id = %s"
+            query = "DELETE FROM nhanvien WHERE ma_nhan_vien = %s"
             cursor.execute(query, (id,))
             conn.commit()
             conn.close()

@@ -145,13 +145,14 @@ class FormTTNhanVien(tk.Toplevel):
         self.job_title_entry.delete(0, tk.END)
 
     def handleDelete(self):
-        isSuccess = self.controller.deleteEmployeeController(self.employee_data[0])
-        if isSuccess:
-            messagebox.showinfo("Thành công", "Xóa nhân viên thành công.")
-            self.parent.reload_data()
-            self.destroy()
-        else:
-            messagebox.showerror("Lỗi", "Xóa nhân viên thất bại.")
+        print(self.employee_data[0])
+        # isSuccess = self.controller.deleteEmployeeController(self.employee_data[0])
+        # if isSuccess:
+        #     messagebox.showinfo("Thành công", "Xóa nhân viên thành công.")
+        #     self.parent.reload_data()
+        #     self.destroy()
+        # else:
+        #     messagebox.showerror("Lỗi", "Xóa nhân viên thất bại.")
 
 
 if __name__ == "__main__":

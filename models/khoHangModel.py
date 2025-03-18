@@ -83,6 +83,25 @@ class KhoHangModel:
         except Exception as e:
             raise Exception(f"An error occurred: {str(e)}")
 
+    def getAllProducts(self):
+        try:
+            conn = self.db.get_connection()  # Lấy kết nối mới
+            if not conn.is_connected():
+                print("Connection lost. Attempting to reconnect...")
+                conn.reconnect()
+            cursor = conn.cursor()
+            query = """
+                SELECT kh.id_san_pham, sp.ten_sp FROM khohang kh LEFT JOIN sanpham sp on sp.id = kh.id_san_pham 
+            """
+            cursor.execute(query)
+            result = cursor.fetchall()
+            conn.close()
+            if not result:
+                return "Dữ liệu trống"
+            return result
+        except Exception as e:
+            raise Exception(f"An error occurred: {str(e)}")
+
     def generate_ma_kho(self):
         try:
             conn = self.db.get_connection()  # Lấy kết nối mới
@@ -214,11 +233,12 @@ class KhoHangModel:
     def xuatKho(self, data):
         conn = None
         try:
+            print("Check data received:", data)
             conn = self.db.get_connection()
             if not conn.is_connected():
                 print("Connection lost. Attempting to reconnect...")
                 conn.reconnect()
-            cursor = conn.cursor()
+            cursor = conn.cursor(buffered=True)
 
             # 1. Lấy giá bán từ bảng sanpham
             cursor.execute("SELECT gia_ban FROM sanpham WHERE id = %s", (data['id_san_pham'],))
@@ -276,7 +296,7 @@ class KhoHangModel:
         except Exception as e:
             if conn:
                 conn.rollback()
-            raise e
+            raise Exception(f"Lỗi xuất kho: {e}")
         finally:
             if conn:
                 conn.close()

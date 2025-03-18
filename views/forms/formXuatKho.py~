@@ -122,7 +122,7 @@ class XuatKhoForm(tk.Toplevel):
             print("Chay den day")
             if result:
                 messagebox.showinfo("Thành công", "Xuất kho thành công")
-                self.parent.update_table_kiem_kho(self.parent.controller.getAllHistoryController())
+                # self.parent.update_table_kiem_kho(self.parent.controller.getAllHistoryController())
                 self.destroy()
             else:
                 messagebox.showerror("Lỗi", "Xuất kho không thành công")

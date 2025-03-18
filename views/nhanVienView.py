@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+import ast
 from controllers.nhanVienController import NhanVienController  # Update to your employee controller
 from views.forms.formTaoNhanVien import FormTaoNhanVien  # Update form for creating an employee
 from views.forms.formTTNhanVien import FormTTNhanVien  # Update form for employee details
@@ -140,8 +141,25 @@ class NhanVienFrame(tk.Frame):
     def on_row_select(self, event):
         selected_item = self.tree.selection()[0]
         row_data = self.tree.item(selected_item)["tags"][0]
-        FormTTNhanVien(self, employee_data=row_data)
+        id = self.extract_id_from_string(row_data)
+        print("Check row data : ", id)
+        FormTTNhanVien(self, id)
 
+    def extract_id_from_string(self,raw_string):
+        try:
+            if not raw_string.startswith("{"):
+                raw_string = "{" + raw_string + "}"
+
+            data = ast.literal_eval(raw_string)
+
+            # Lấy giá trị của 'id'
+            if 'id' in data:
+                return data['id']
+            else:
+                raise Exception("Không tìm thấy khóa 'id' trong chuỗi")
+
+        except (SyntaxError, ValueError) as e:
+            raise Exception(f"Không thể chuyển đổi chuỗi thành dictionary: {e}")
 
 if __name__ == "__main__":
     root = tk.Tk()
