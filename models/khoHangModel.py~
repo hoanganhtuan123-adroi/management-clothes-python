@@ -266,9 +266,6 @@ class KhoHangModel:
 
             # 3. Cập nhật tồn kho
             new_ton_kho = ton_kho - data['so_luong_xuat']
-            print("TOn kho: ", ton_kho)
-            print("soluongxuat: ", data['so_luong_xuat'])
-            print("New ton kho: ", new_ton_kho)
             cursor.execute("""
                 UPDATE khohang 
                 SET so_luong_ton_kho = %s 

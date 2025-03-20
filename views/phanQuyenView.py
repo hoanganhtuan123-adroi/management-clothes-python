@@ -31,10 +31,12 @@ class PhanQuyenFrame(tk.Frame):
         search_frame = tk.Frame(filter_frame, bg="#ffffff")
         search_frame.pack(side="right", padx=5)
         tk.Entry(search_frame, font=("Helvetica", 10), width=20).pack(side="left", padx=5)
-        tk.Button(search_frame, text="Tìm kiếm", font=("Helvetica", 10), bg="#3498db", fg="white").pack(side="left")
+        tk.Button(search_frame, text="Tìm kiếm", font=("Arial", 12, "bold"),
+                                  bg="#38b6ff", fg="white", bd=0, padx=20, pady=5,).pack(side="left")
 
         # Nút tạo đơn mới
-        tk.Button(main_frame, text="+ Tạo mới", font=("Helvetica", 12), bg="#3498db", fg="white", command=self.open_form_create_account).pack(anchor="e", pady=5)
+        tk.Button(main_frame, text="+ Tạo mới", font=("Arial", 12, "bold"),
+                                  bg="#38b6ff", fg="white", bd=0, padx=20, pady=5, command=self.open_form_create_account).pack(anchor="e")
 
         # Bảng hiển thị dữ liệu
         tree_frame = tk.Frame(main_frame, bg="#ffffff")

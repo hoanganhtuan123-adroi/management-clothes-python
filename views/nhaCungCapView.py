@@ -26,14 +26,16 @@ class NhaCungCapFrame(tk.Frame):
         filter_frame.pack(fill="x", pady=5)
 
         # Các nút
-        tk.Button(filter_frame, text="Thêm nhà cung cấp", font=("Helvetica", 10), bg="#3498db", fg="white", width=15, command=self.open_form_add_supplier
+        tk.Button(filter_frame, text="Thêm nhà cung cấp", font=("Arial", 12, "bold"),
+                                  bg="#38b6ff", fg="white", bd=0, padx=20, pady=5, command=self.open_form_add_supplier
                   ).pack(
             side="right", padx=5)
         # Ô tìm kiếm
         search_frame = tk.Frame(filter_frame, bg="#ffffff")
         search_frame.pack(side="right", padx=5)
         tk.Entry(search_frame, font=("Helvetica", 10), width=20).pack(side="left", padx=5)
-        tk.Button(search_frame, text="Tìm kiếm", font=("Helvetica", 10), bg="#3498db", fg="white").pack(side="left")
+        tk.Button(search_frame, text="Tìm kiếm",font=("Arial", 12, "bold"),
+                                  bg="#38b6ff", fg="white", bd=0, padx=20, pady=5,).pack(side="left")
 
         # Bảng hiển thị dữ liệu
         self.tree_frame = tk.Frame(main_frame, bg="#ffffff")

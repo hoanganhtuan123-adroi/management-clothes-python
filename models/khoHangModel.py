@@ -83,7 +83,7 @@ class KhoHangModel:
         except Exception as e:
             raise Exception(f"An error occurred: {str(e)}")
 
-    def getAllProducts(self):
+    def getAllProductsExport(self):
         try:
             conn = self.db.get_connection()  # Lấy kết nối mới
             if not conn.is_connected():

@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from datetime import datetime
-from controllers.sanPhamController import SanPhamController
 from controllers.khoHangController import KhoHangController
 
 class XuatKhoForm(tk.Toplevel):
@@ -12,7 +11,7 @@ class XuatKhoForm(tk.Toplevel):
         self.geometry("800x600")
         self.configure(bg="#F5F5F5")
         self.controller_kho = KhoHangController()
-        self.list_products = self.controller_kho.getAllProductsController()
+        self.list_products = self.controller_kho.getAllProductsExportController()
 
         # Style configuration
         self.style = ttk.Style()

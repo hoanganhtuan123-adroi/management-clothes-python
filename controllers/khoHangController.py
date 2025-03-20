@@ -19,6 +19,6 @@ class KhoHangController:
     def xuatKhoController(self, data):
         result = self.khoHangModel.xuatKho(data)
         return result
-    def getAllProductsController(self):
-        result = self.khoHangModel.getAllProducts()
+    def getAllProductsExportController(self):
+        result = self.khoHangModel.getAllProductsExport()
         return result

@@ -85,10 +85,20 @@ class FormThongTinTaiKhoan(tk.Toplevel):
             self.confirmPass.delete(0, tk.END)
 
             # Chèn dữ liệu từ self.accountInfor vào các Entry
+            self.accountName.config(state="normal")
             self.accountName.insert(0, self.accountInfor[0])  # Tên đăng nhập
+            self.accountName.config(state="readonly")
+
+            self.nameStaff.config(state="normal")
             self.nameStaff.insert(0, self.accountInfor[5])  # Họ và tên
+            self.nameStaff.config(state="readonly")
+
             self.email.insert(0, self.accountInfor[4])  # Email
+
+            self.phone.config(state="normal")
             self.phone.insert(0, self.accountInfor[6])  # Số điện thoại
+            self.phone.config(state="readonly")
+
             self.role.set(self.accountInfor[2])  # Phân quyền
             self.statusAcc.set(self.accountInfor[3])  # Trạng thái tài khoản
             self.password.insert(0, self.accountInfor[1])  # Mật khẩu

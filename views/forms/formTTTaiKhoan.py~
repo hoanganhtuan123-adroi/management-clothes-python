@@ -70,7 +70,7 @@ class FormThongTinTaiKhoan(tk.Toplevel):
 
         # Nút Lưu
         save_button = tk.Button(form_frame, text="Lưu", bg="#007BFF", fg="white",
-                                font=("Arial", 14), width=10, command=self.get_data)
+                                font=("Arial", 14), width=10, command=self.update_data)
         save_button.pack(pady=20)
 
     def render_data(self):
@@ -85,8 +85,14 @@ class FormThongTinTaiKhoan(tk.Toplevel):
             self.confirmPass.delete(0, tk.END)
 
             # Chèn dữ liệu từ self.accountInfor vào các Entry
+            self.accountName.config(state="normal")
             self.accountName.insert(0, self.accountInfor[0])  # Tên đăng nhập
+            self.accountName.config(state="readonly")
+
+            self.nameStaff.config(state="normal")
             self.nameStaff.insert(0, self.accountInfor[5])  # Họ và tên
+            self.nameStaff.config(state="readonly")
+            
             self.email.insert(0, self.accountInfor[4])  # Email
             self.phone.insert(0, self.accountInfor[6])  # Số điện thoại
             self.role.set(self.accountInfor[2])  # Phân quyền

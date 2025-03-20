@@ -31,24 +31,28 @@ class DonHangFrame(tk.Frame):
         filter_frame.pack(fill="x", pady=5)
 
         # Các nút lọc
-        tk.Button(filter_frame, text="Tất cả các đơn", font=("Helvetica", 10), bg="#3498db", fg="white", width=15, command=self.get_all_orders).pack(
+        tk.Button(filter_frame, text="Tất cả các đơn", font=("Arial", 12, "bold"),
+                                  bg="#38b6ff", fg="white", bd=0, padx=20, pady=5, command=self.get_all_orders).pack(
             side="left", padx=5)
-        tk.Button(filter_frame, text="Đơn hàng mới", font=("Helvetica", 10), bg="#3498db", fg="white", width=15, command=self.get_latest_orders).pack(
+        tk.Button(filter_frame, text="Đơn hàng mới",font=("Arial", 12, "bold"),
+                                  bg="#38b6ff", fg="white", bd=0, padx=20, pady=5, command=self.get_latest_orders).pack(
             side="left", padx=5)
-        tk.Button(filter_frame, text="Chưa giao hàng", font=("Helvetica", 10), bg="#3498db", fg="white", width=15, command=self.get_hasnt_delivered_orders).pack(
+        tk.Button(filter_frame, text="Chưa giao hàng", font=("Arial", 12, "bold"),
+                                  bg="#38b6ff", fg="white", bd=0, padx=20, pady=5, command=self.get_hasnt_delivered_orders).pack(
             side="left", padx=5)
-        tk.Button(filter_frame, text="Chưa thanh toán", font=("Helvetica", 10), bg="#3498db", fg="white",
-                  width=15, command=self.get_hasnt_paid_orders).pack(side="left", padx=5)
+        tk.Button(filter_frame, text="Chưa thanh toán", font=("Arial", 12, "bold"),
+                                  bg="#38b6ff", fg="white", bd=0, padx=20, pady=5, command=self.get_hasnt_paid_orders).pack(side="left", padx=5)
 
         # Ô tìm kiếm
         search_frame = tk.Frame(filter_frame, bg="#ffffff")
         search_frame.pack(side="right", padx=5)
         tk.Entry(search_frame, font=("Helvetica", 10), width=20).pack(side="left", padx=5)
-        tk.Button(search_frame, text="Tìm kiếm", font=("Helvetica", 10), bg="#3498db", fg="white").pack(side="left")
+        tk.Button(search_frame, text="Tìm kiếm",font=("Arial", 12, "bold"),
+                                  bg="#38b6ff", fg="white", bd=0, padx=20, pady=5,).pack(side="left")
 
         # Nút tạo đơn mới
-        tk.Button(main_frame, text="+ Tạo đơn mới", font=("Helvetica", 12), bg="#3498db", fg="white", command=self.create_order).pack(anchor="e",
-                                                                                                           pady=5)
+        tk.Button(main_frame, text="+ Tạo đơn mới",font=("Arial", 12, "bold"),
+                                  bg="#38b6ff", fg="white", bd=0, padx=20, pady=5, command=self.create_order).pack(anchor="e")
 
         # Bảng hiển thị dữ liệu
         tree_frame = tk.Frame(main_frame, bg="#ffffff")
